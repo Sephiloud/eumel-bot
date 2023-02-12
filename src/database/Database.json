@@ -1,0 +1,12 @@
+{
+  "Valentine": {
+    "keyv": "sqlite://./database/valentine.sqlite",
+    "path": "./database",
+    "filename": "valentine.sqlite"
+  },
+  "Wolf": {
+    "keyv": "sqlite://./database/valentine.sqlite",
+    "path": "./database",
+    "filename": "wolf.sqlite"
+  }
+}
