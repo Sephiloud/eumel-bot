@@ -1,7 +1,7 @@
 import { Client, GatewayIntentBits, ClientOptions } from "discord.js";
-import { token } from './config.json';
 import ready from "./listeners/ready";
 import interactionCreate from "./listeners/interactionCreate";
+const token = process.env.TOKEN;
 
 console.log("Bot is starting...");
 
@@ -17,4 +17,8 @@ const client = new Client({
 ready(client);
 interactionCreate(client);
 
-client.login(token);
+if (token) {
+	client.login(token);
+} else {
+	console.log("No valid token was provided.")
+}

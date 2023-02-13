@@ -4,11 +4,11 @@
   "description": "Discord Bot for the Eumelcord Server",
   "main": "Bot.js",
   "scripts": {
-    "start": "ts-node src/Bot.ts",
+    "start": "ts-node -r dotenv/config src/Bot.ts",
     "build": "tsc -p .",
-    "deploy": "ts-node src/deployCommands.ts",
-    "startJS": "node dist/Bot.js",
-    "deployJS": "node dist/deployCommands.js"
+    "deploy": "ts-node -r dotenv/config src/deployCommands.ts",
+    "startJS": "node -r dotenv/config dist/Bot.js",
+    "deployJS": "node -r dotenv/config dist/deployCommands.js"
   },
   "bin": "dist/Bot.js",
   "pkg": {

@@ -1,6 +1,8 @@
 import { REST, Routes, SlashCommandBuilder, RESTPostAPIChatInputApplicationCommandsJSONBody } from 'discord.js';
-import { clientId, guilds, token } from './config.json';
 import { Commands } from './Commands';
+const token = process.env.TOKEN ?? '';
+const clientId = process.env.CLIENT_ID ?? '';
+const guilds = process.env.GUILDS?.split(' ') ?? [];
 
 const commandsJSON: RESTPostAPIChatInputApplicationCommandsJSONBody[] = [];
 for (const command of Commands) {
