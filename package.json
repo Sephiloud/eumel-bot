@@ -14,7 +14,10 @@
   "pkg": {
     "scripts": "dist/**/*.js",
     "assets": "database/**/*",
-    "targets": [ "node18-win-x64", "node18-linux-x64" ],
+    "targets": [
+      "node18-win-x64",
+      "node18-linux-x64"
+    ],
     "outputPath": "executables"
   },
   "author": "Sephi",
@@ -24,6 +27,7 @@
     "@types/cron": "^2.0.0",
     "cron": "^2.2.0",
     "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
     "keyv": "^4.5.2"
   },
   "devDependencies": {
