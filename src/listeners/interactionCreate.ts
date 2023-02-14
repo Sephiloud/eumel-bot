@@ -17,7 +17,7 @@ export default (client: Client): void => {
 const handleSlashCommand = async (client: Client, interaction: CommandInteraction): Promise<void> => {
     const slashCommand = Commands.find(c => c.name === interaction.commandName);
     if (!slashCommand) {
-        interaction.reply({ content: `No command matching ${interaction.commandName} was found.` });
+        interaction.reply({ content: `No command matching ${interaction.commandName} was found.`, ephemeral: true });
         return;
     }
 
