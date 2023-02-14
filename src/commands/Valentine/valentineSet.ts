@@ -1,5 +1,5 @@
 import { CommandInteraction, Client, ApplicationCommandType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, 
-    UserSelectMenuBuilder, ButtonBuilder, ButtonStyle, ComponentType, CollectedInteraction, SlashCommandStringOption, UserSelectMenuInteraction, StringSelectMenuInteraction, User, ActionRow, GuildMember } from "discord.js";
+    UserSelectMenuBuilder, ButtonBuilder, ButtonStyle, ComponentType, CollectedInteraction, SlashCommandStringOption, UserSelectMenuInteraction, StringSelectMenuInteraction, User, ActionRow, GuildMember, SlashCommandUserOption } from "discord.js";
 import { Command } from "../../Command";
 import { ValentineUserData, Greeting, UnfinishedGreeting } from "./valentineTypes";
 import { DatabaseName, getKeyvDatabase } from "../../database/databaseFunctions";
@@ -10,13 +10,20 @@ export const ValentineSet: Command = {
     name: "valentine-set",
     description: "Create a valentine card for a person you like!",
     type: ApplicationCommandType.ChatInput,
-    options: [new SlashCommandStringOption()
-        .setName('custome-message')
-        .setDescription('Write your own message instead of selecting one of the predefined.')
-        .setRequired(false)],
+    options: [
+        new SlashCommandStringOption()
+            .setName('custome-message')
+            .setDescription('Write your own message instead of selecting one of the predefined.')
+            .setRequired(false),
+        new SlashCommandUserOption()
+            .setName('target-user')
+            .setDescription('Set the target user inline. (recommended for mobile devices)')
+            .setRequired(false)
+    ],
     run: async (client: Client, interaction: CommandInteraction) => {
         const uniqueId = Date.now().toString();
         const customMessage = interaction.options.get('custome-message')?.value;
+        const targetUser = interaction.options.get('target-user')?.user;
 
         const userSelection = new ActionRowBuilder<UserSelectMenuBuilder>().addComponents(
             new UserSelectMenuBuilder().setCustomId('valentineUser' + ' ' + uniqueId)
@@ -40,7 +47,8 @@ export const ValentineSet: Command = {
             ));
         });
         
-        const {embeds, content, button: finishButton} = await handleSelection(uniqueId, 'valentineSentence', (interaction.member as GuildMember), customMessage?.toString());
+        await handleSelection(uniqueId, 'valentineSentence', (interaction.member as GuildMember), customMessage?.toString());
+        const {embeds, content, button: finishButton} = await handleSelection(uniqueId, 'valentineUser', (interaction.member as GuildMember), targetUser?.id);
         if (finishButton) components.push(finishButton);
 
 		const message = await interaction.reply({ content: content ? content : `Select one user and one message to create a valentine card for the 14.02.2023!`, 
