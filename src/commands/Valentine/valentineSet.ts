@@ -4,7 +4,7 @@ import { Command } from "../../Command";
 import { ValentineUserData, Greeting, UnfinishedGreeting } from "./valentineTypes";
 import { DatabaseName, getKeyvDatabase } from "../../database/databaseFunctions";
 import { ValentineMessages } from "./valentineMessages.json";
-import collectorWithErrorHandling from "src/wrapper/collectorWithErrorHandling";
+import collectorWithErrorHandling from "../../wrapper/collectorWithErrorHandling";
 
 export const ValentineSet: Command = {
     name: "valentine-set",

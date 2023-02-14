@@ -4,7 +4,7 @@ import { Command } from "../../Command";
 import { ValentineUserData } from './valentineTypes';
 
 export const ValentineCountCards: Command = {
-    name: "valentine-help-public",
+    name: "valentine-count-cards",
     description: "Get an public introduction to the bot.",
     type: ApplicationCommandType.ChatInput,
     defaultMemberPermissions: PermissionsBitField.Flags.ManageChannels,
