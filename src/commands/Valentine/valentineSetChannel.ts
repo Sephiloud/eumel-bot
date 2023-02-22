@@ -1,6 +1,5 @@
 import { CommandInteraction, Client, ApplicationCommandType, 
     PermissionsBitField, SlashCommandChannelOption, ChannelType } from 'discord.js';
-import Keyv from "keyv";
 import { DatabaseName, getKeyvDatabase } from '../../database/databaseFunctions';
 import { Command } from "../../Command";
 
@@ -13,7 +12,7 @@ export const ValentineSetChannel: Command = {
         .addChannelTypes(ChannelType.GuildText)
         .setDescription('Select the channel for the valentine messages.')
         .setRequired(true)],
-    defaultMemberPermissions: PermissionsBitField.Flags.Administrator,
+    defaultMemberPermissions: PermissionsBitField.Flags.ManageChannels,
     run: async (client: Client, interaction: CommandInteraction) => {
         await interaction.deferReply({ephemeral: true});
         const channel = interaction.options.get('valentines-channel', true);

@@ -1,10 +1,11 @@
 import { CommandInteraction, Client, ApplicationCommandType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, 
-    UserSelectMenuBuilder, ButtonBuilder, ButtonStyle, ComponentType, CollectedInteraction, SlashCommandStringOption, UserSelectMenuInteraction, StringSelectMenuInteraction, User, ActionRow, GuildMember, SlashCommandUserOption } from "discord.js";
+    UserSelectMenuBuilder, ButtonBuilder, ButtonStyle, ComponentType, CollectedInteraction, SlashCommandStringOption, UserSelectMenuInteraction, StringSelectMenuInteraction, User, ActionRow, GuildMember, SlashCommandUserOption, TextChannel, TextBasedChannel } from "discord.js";
 import { Command } from "../../Command";
 import { ValentineUserData, Greeting, UnfinishedGreeting } from "./valentineTypes";
 import { DatabaseName, getKeyvDatabase } from "../../database/databaseFunctions";
 import { ValentineMessages } from "./valentineMessages.json";
 import collectorWithErrorHandling from "../../wrapper/collectorWithErrorHandling";
+import { Timeframe } from "./valentineSetTimeframe";
 
 export const ValentineSet: Command = {
     name: "valentine-set",
@@ -47,8 +48,8 @@ export const ValentineSet: Command = {
             ));
         });
         
-        await handleSelection(uniqueId, 'valentineSentence', (interaction.member as GuildMember), customMessage?.toString());
-        const {embeds, content, button: finishButton} = await handleSelection(uniqueId, 'valentineUser', (interaction.member as GuildMember), targetUser?.id);
+        const {embeds, content, button: finishButton} = await handleSelection(uniqueId, 'valentineBoth', 
+            (interaction.member as GuildMember), [targetUser?.id, customMessage?.toString()]);
         if (finishButton) components.push(finishButton);
 
 		const message = await interaction.reply({ content: content ? content : `Select one user and one message to create a valentine card for the 14.02.2023!`, 
@@ -87,38 +88,56 @@ export const ValentineSet: Command = {
 
                 let description = "Couldn't save the valentines card. Please retry the whole command!";
 
-                const creatorData = await getKeyvDatabase(DatabaseName.Valentine, 'valentineCreator' + collected.guild?.id);
-                const currentValentineData = (await creatorData?.get(collected.user.id)) as ValentineUserData | undefined;
+                const guildDatabase = await getKeyvDatabase(DatabaseName.Valentine, 'valentineCreator' + collected.guild?.id);
+                const currentValentineData = (await guildDatabase?.get(collected.user.id)) as ValentineUserData | undefined;
 
-                if (currentValentineData && creatorData) {
+                if (currentValentineData && guildDatabase) {
                     const unfinishedGreetingIndex = currentValentineData.unfinishedGreetings.findIndex(
                         greeting => greeting.uniqueID === uniqueID);
                     let unfinishedGreeting = unfinishedGreetingIndex >= 0 ? 
                         currentValentineData.unfinishedGreetings[unfinishedGreetingIndex] : undefined;
                         
                     if (unfinishedGreeting && unfinishedGreeting.targetID && unfinishedGreeting.greeting) {
-                            currentValentineData.greetings.push(unfinishedGreeting as Greeting);
-                            currentValentineData.unfinishedGreetings = [];
-                            creatorData.set(collected.user.id, currentValentineData);
-                            description = "Finished! Card was added and edit won't work anymore!"
+                        currentValentineData.greetings.push(unfinishedGreeting as Greeting);
+                        currentValentineData.unfinishedGreetings = [];
+                        guildDatabase.set(collected.user.id, currentValentineData);
+                        description = "Finished! Card was added and edit won't work anymore!"
 
-                            let creatorIds = (await creatorData.get('creatorIds')) as string[] | undefined ?? [];
-                            if (!creatorIds.indexOf) {creatorIds = []}
-                            if (creatorIds.indexOf(collected.user.id) === -1) {
-                                creatorIds.push(collected.user.id)
-                                creatorData.set('creatorIds', creatorIds);
+                        let creatorIds = (await guildDatabase.get('creatorIds')) as string[] | undefined ?? [];
+                        if (!creatorIds.indexOf) {creatorIds = []}
+                        if (creatorIds.indexOf(collected.user.id) === -1) {
+                            creatorIds.push(collected.user.id)
+                            guildDatabase.set('creatorIds', creatorIds);
+                        }
+
+                        const database = await getKeyvDatabase(DatabaseName.Valentine)
+                        if (database) {
+                            let valentineGuilds = (await database.get('valentineGuilds')) as string[] | undefined;
+                            if (!valentineGuilds && collected.guild) { 
+                                valentineGuilds = [collected.guild.id]; 
+                            } else if (valentineGuilds && collected.guild && valentineGuilds.indexOf(collected.guild.id) < 0) { 
+                                valentineGuilds.push(collected.guild.id); 
                             }
+                            database.set('valentineGuilds', valentineGuilds)
+                        } else { 
+                            description = 'Card was saved, but the server id couldn\'t be added. Please add another Card or ask for support.'; 
+                        }
 
-                            const database = await getKeyvDatabase(DatabaseName.Valentine)
-                            if (database) {
-                                let valentineGuilds = (await database.get('valentineGuilds')) as string[] | undefined;
-                                if (!valentineGuilds && collected.guild) { 
-                                    valentineGuilds = [collected.guild.id]; 
-                                } else if (valentineGuilds && collected.guild && valentineGuilds.indexOf(collected.guild.id) < 0) { 
-                                    valentineGuilds.push(collected.guild.id); 
-                                }
-                                database.set('valentineGuilds', valentineGuilds)
-                            } else { description = 'Card was saved, but the server id couldn\'t be added. Please add another Card or ask for support.'; }
+                        if (collected.guildId && await isValentineInTimeframe(collected.guildId)) {
+                            const channelId = (await guildDatabase?.get('channel')) as string | undefined ?? '0';
+                            const channel: TextBasedChannel | null = (client.channels.cache.get(channelId) as TextBasedChannel | undefined) 
+                                ?? interaction.channel;
+
+                            if (channel) {
+                                const greeting = unfinishedGreeting as Greeting;
+                                const embed = new EmbedBuilder()
+                                    .setTitle("<:ECv_loveletter:1072685269414846554> **YOU'VE GOT MAIL!**")
+                                    .setColor(0xFFC0CB)
+                                    .setThumbnail("https://cdn.discordapp.com/emojis/1072685307855646801.webp")
+                                    .setDescription(`${greeting.greeting.replaceAll('\\n', '\n')}`);
+                                channel.send({content: `<@${greeting.targetID}> has received a Valentine!`, embeds: [embed]});
+                            }
+                        }
                     }
                 }
                 
@@ -133,8 +152,8 @@ export const ValentineSet: Command = {
     }
 };
 
-async function handleSelection(uniqueID: string, customId: string, member: GuildMember, value?: string) 
-    : Promise<{content?: string, embeds?: EmbedBuilder[], button?: ActionRowBuilder<ButtonBuilder>}> {
+async function handleSelection(uniqueID: string, customId: "valentineSentence" | "valentineUser" | "valentineBoth", member: GuildMember, 
+    value?: string | (string | undefined)[]) : Promise<{content?: string, embeds?: EmbedBuilder[], button?: ActionRowBuilder<ButtonBuilder>}> {
         const creatorData = await getKeyvDatabase(DatabaseName.Valentine, 'valentineCreator' + member.guild?.id);
         if (!creatorData) {
             return { content: "Connection to database failed! Please try the command again or ask for support." };
@@ -143,8 +162,7 @@ async function handleSelection(uniqueID: string, customId: string, member: Guild
         let disableButton = true;
 
         let unfinishedGreeting: UnfinishedGreeting | null = null;
-        if (value) {
-            value = value.replaceAll('\\n', '\n');
+        if ((value && !(value instanceof Array)) || (value instanceof Array && (value[0] || value[1]))) {
             let currentValentineData = (await creatorData.get(member.id)) as ValentineUserData | undefined;
             if (!currentValentineData) {
                 currentValentineData = {tag: member.user.tag, id: member.id, 
@@ -158,8 +176,13 @@ async function handleSelection(uniqueID: string, customId: string, member: Guild
                 : null;
             if (!unfinishedGreeting) { unfinishedGreeting = {uniqueID} }
 
-            if (customId === 'valentineSentence') { unfinishedGreeting.greeting = value } 
-            else { unfinishedGreeting.targetID = value }
+            if (customId === 'valentineSentence' && !(value instanceof Array)) { unfinishedGreeting.greeting = value.replaceAll('\\n', '\n') } 
+            else if (customId === 'valentineUser' && !(value instanceof Array)) { unfinishedGreeting.targetID = value }
+            else if (customId === 'valentineBoth' && (value instanceof Array)) {
+                if (value[0]) { unfinishedGreeting.targetID = value[0] }
+                if (value[1]) { unfinishedGreeting.greeting = value[1] }
+            }
+
             if (unfinishedGreetingIndex >= 0) {
                 currentValentineData.unfinishedGreetings[unfinishedGreetingIndex] = unfinishedGreeting;
             } else { currentValentineData.unfinishedGreetings.push(unfinishedGreeting) }
@@ -185,4 +208,13 @@ async function handleSelection(uniqueID: string, customId: string, member: Guild
             ]);
 
         return { embeds: [embed], button: finishButton };
+}
+
+async function isValentineInTimeframe(guildId: string) {
+    const creatorDatabase = await getKeyvDatabase(DatabaseName.Valentine, 'valentineCreator' + guildId);
+    const timeframe = creatorDatabase?.get("timeFrame") as Timeframe | undefined;
+    if (timeframe && timeframe.minDate <= Date.now() && Date.now() <= timeframe.maxDate) {
+        return true;
+    }
+    return false;
 }

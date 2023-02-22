@@ -13,7 +13,7 @@ export const ValentineCountCards: Command = {
         .setDescription('Select the user to show the created cards count. (default: show for all user of this server)')
         .setRequired(false)],
     run: async (client: Client, interaction: CommandInteraction) => {
-        interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
         const user = interaction.options.get('valentines-user', false);
         let content = 'No Data found!';
 
@@ -24,7 +24,8 @@ export const ValentineCountCards: Command = {
         }
 
         const creatorIds = user?.user ? [user.user.id] : (await valetinesDatabase.get("creatorIds")) as string[] | undefined;
-        if (creatorIds) {
+        if (creatorIds && creatorIds.length > 0) {
+            content = '';
             for (let creatorId of creatorIds) {
                 const valentineData = (await valetinesDatabase.get(creatorId)) as ValentineUserData | undefined;
                 const cardCount = valentineData?.greetings?.length ?? 0;
