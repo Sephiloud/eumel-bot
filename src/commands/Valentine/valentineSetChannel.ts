@@ -9,7 +9,7 @@ export const ValentineSetChannel: Command = {
     type: ApplicationCommandType.ChatInput,
     options: [new SlashCommandChannelOption()
         .setName('valentines-channel')
-        .addChannelTypes(ChannelType.GuildText)
+        .addChannelTypes(ChannelType.DM | ChannelType.GroupDM | ChannelType.GuildAnnouncement | ChannelType.PublicThread | ChannelType.PrivateThread | ChannelType.AnnouncementThread | ChannelType.GuildText)
         .setDescription('Select the channel for the valentine messages.')
         .setRequired(true)],
     defaultMemberPermissions: PermissionsBitField.Flags.ManageChannels,

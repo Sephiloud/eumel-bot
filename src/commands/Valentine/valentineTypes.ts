@@ -14,3 +14,4 @@ export type ValentineUserData = {
   greetings: Greeting[],
   unfinishedGreetings: UnfinishedGreeting[]
 };
+export type TextChannelWithSend = Extract<import("discord.js").TextBasedChannel, { send: Function }>;

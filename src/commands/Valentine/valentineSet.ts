@@ -1,7 +1,7 @@
 import { CommandInteraction, Client, ApplicationCommandType, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, 
-    UserSelectMenuBuilder, ButtonBuilder, ButtonStyle, ComponentType, CollectedInteraction, SlashCommandStringOption, UserSelectMenuInteraction, StringSelectMenuInteraction, User, ActionRow, GuildMember, SlashCommandUserOption, TextChannel, TextBasedChannel } from "discord.js";
+    UserSelectMenuBuilder, ButtonBuilder, ButtonStyle, ComponentType, CollectedInteraction, SlashCommandStringOption, GuildMember, SlashCommandUserOption, TextChannel, TextBasedChannel } from "discord.js";
 import { Command } from "../../Command";
-import { ValentineUserData, Greeting, UnfinishedGreeting } from "./valentineTypes";
+import { ValentineUserData, Greeting, UnfinishedGreeting, TextChannelWithSend } from "./valentineTypes";
 import { DatabaseName, getKeyvDatabase } from "../../database/databaseFunctions";
 import { ValentineMessages } from "./valentineMessages.json";
 import collectorWithErrorHandling from "../../wrapper/collectorWithErrorHandling";
@@ -125,8 +125,8 @@ export const ValentineSet: Command = {
 
                         if (collected.guildId && await isValentineInTimeframe(collected.guildId)) {
                             const channelId = (await guildDatabase?.get('channel')) as string | undefined ?? '0';
-                            const channel: TextBasedChannel | null = (client.channels.cache.get(channelId) as TextBasedChannel | undefined) 
-                                ?? interaction.channel;
+                            const channel: import("./valentineTypes").TextChannelWithSend | null = (client.channels.cache.get(channelId) as TextChannelWithSend | undefined) 
+                                ?? (interaction.channel as TextChannelWithSend);
 
                             if (channel) {
                                 const greeting = unfinishedGreeting as Greeting;
