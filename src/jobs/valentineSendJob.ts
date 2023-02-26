@@ -1,4 +1,4 @@
-import { Client, EmbedBuilder, TextBasedChannel } from "discord.js";
+import { Client, EmbedBuilder, TextChannel } from "discord.js";
 import {CronJob, CronTime} from 'cron';
 import { Greeting, ValentineUserData } from "../commands/Valentine/valentineTypes";
 import { DatabaseName, getKeyvDatabase } from "../database/databaseFunctions";
@@ -23,7 +23,7 @@ export function valentineSendJob(client: Client) {
             }
             
             if (greetings.length > 0) {
-                const channel = client.channels.cache.get(channelId) as TextBasedChannel | undefined;
+                const channel = client.channels.cache.get(channelId) as TextChannel | undefined;
                 if (!channel) return;
                 for (const greeting of greetings) {
                     if (Number(greeting.uniqueID) >= 1676368500000) {
