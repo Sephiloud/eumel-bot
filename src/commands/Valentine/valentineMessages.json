@@ -1,12 +1,13 @@
 {
     "ValentineMessages": [
-        [ "I totally a-Dumbledore you!", 
+        [ "You have konquered my heart like it's mortal kombat",
             "You're the cutest person to me!", 
             "I would choose you over anyone else!", 
             "You're the friend I was looking for!", 
             "You're adorable, I've got a little crush on you!", 
             "I love 'ya more than Sassi loves cookies!", 
             "Thank you for always being a wonderful friend to me!", 
+            "Not even the Elder Gods could keep us apart",
             "You've got the key to my heart!", 
             "I'll always be your friend!", 
             "I would love to be your Valentine!", 
@@ -16,10 +17,9 @@
             "Your friendship means the world to me!", 
             "If you were a book, I'd check you out!", 
             "You are one of the most beautiful persons in this place!", 
-            "You are very talented, I admire your skills!", 
-            "You are always able to make me laugh, I appreciate your humor!", 
             "You are a Cutie Pie!", 
             "You are beautiful inside and out!", 
+            "Are you Vladimir Makarov? 'Cause I want to dedicate myself to your cause",
             "You are very fun to be with!", 
             "I appreciate your company! ", 
             "I'm always happy if you're around!", 
@@ -37,9 +37,23 @@
             "I'd eat you for second breakfast!", 
             "Are you a Death Eater? 'Cause AzkaDAMN!", 
             "I'd take you to my Chamber of Secrets!", 
-            "I'm severusly falling for you!", 
-            "You must be a Horcrux because a little piece of me is always with you!", 
-            "You're aThorable!"
+            "You're aThorable!",
+            "You are very talented, I admire your skills!", 
+            "You are always able to make me laugh, I appreciate your humor!"
+        ], ["I'd pause my game for you",
+            "For you I would travel all levels around the world",
+            "I've been scoping you out!",
+            "You've got me hooked for you!",
+            "You're my recruit of choice for tonight",
+            "I'll specialize in upside down for you tonight bby",
+            "I wouldn't sell you out for information",
+            "Are u a war crime? 'Cause I wanna commit to you",
+            "Are u a bullet? 'Cause you're the only thing running through my head right now",
+            "Are u a grave? Because I would love to be in you",
+            "Are you a motorbike? 'Cause I want to ride you tonight",
+            "Are you a tank? Because my heart explodes for you",
+            "How about you do a good deed today and save that horse by riding this cowboy?",
+            "My heart burns for you"
         ]
     ]
 }
