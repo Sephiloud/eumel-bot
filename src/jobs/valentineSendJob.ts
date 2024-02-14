@@ -4,7 +4,7 @@ import { Greeting, TextChannelWithSend, ValentineUserData } from "../commands/Va
 import { DatabaseName, getKeyvDatabase } from "../database/databaseFunctions";
 
 export function valentineSendJob(client: Client) {
-    const valentineJobTime = new CronTime('0 0 23 14 1 *', undefined, 0);
+    const valentineJobTime = new CronTime('0 0 23 14 1 *', undefined, 1);
     const valentineJob = new CronJob(valentineJobTime.sendAt(), async () => {
         const database = await getKeyvDatabase(DatabaseName.Valentine);
         const valentineGuilds = (await database?.get('valentineGuilds')) as string[] | undefined;
@@ -26,14 +26,12 @@ export function valentineSendJob(client: Client) {
                 const channel = client.channels.cache.get(channelId) as TextChannelWithSend | undefined;
                 if (!channel) return;
                 for (const greeting of greetings) {
-                    if (Number(greeting.uniqueID) >= 1676368500000) {
                         const embed = new EmbedBuilder()
                             .setTitle("<:ECv_loveletter:1072685269414846554> **YOU'VE GOT MAIL!**")
                             .setColor(0xFFC0CB)
                             .setThumbnail("https://cdn.discordapp.com/emojis/1072685307855646801.webp")
                             .setDescription(`${greeting.greeting.replaceAll('\\n', '\n')}`);
                         channel.send({content: `<@${greeting.targetID}> has received a Valentine!`, embeds: [embed]});
-                    }
                 }
             }
         }
